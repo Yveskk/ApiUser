@@ -3,4 +3,5 @@ export declare class User {
     firstname: string;
     lastname: string;
     age: number;
+    createdAt: Date;
 }
