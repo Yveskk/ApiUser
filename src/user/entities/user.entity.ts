@@ -15,6 +15,4 @@ export class User {
   @Column()
   age: number;
 
-  @Column()
-  createdAt: Date;
 }

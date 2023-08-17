@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { NotificationModule } from './notification/notification.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -16,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
     }),
     UserModule,
+    NotificationModule,
     ],
   controllers: [AppController],
   providers: [AppService],
