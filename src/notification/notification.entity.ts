@@ -9,12 +9,10 @@ export class NotifictionEntity{
     id : number; 
 
     @Column()
-    action : string; // pour la creation , la mise a jour et la suspression
+    action : string; 
  
     @ManyToMany(() => User , user => user.notifications)
     user : User;
-    // @Column({type : 'int'})
-    // userId : number;
 
     @CreateDateColumn()
     createdAt : Date;

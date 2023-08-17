@@ -33,7 +33,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "findAll", null);
 exports.NotificationController = NotificationController = __decorate([
-    (0, common_1.Controller)('user-actions'),
+    (0, common_1.Controller)('notification'),
     __metadata("design:paramtypes", [notification_service_1.NotificationService])
 ], NotificationController);
 //# sourceMappingURL=notification.controller.js.map

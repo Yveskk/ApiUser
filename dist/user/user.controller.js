@@ -24,7 +24,7 @@ let UserController = exports.UserController = class UserController {
     }
     async create(user) {
         const newUser = await this.userService.createNotification(user);
-        return { message: 'User added successfully', user: newUser };
+        return { message: 'Utilisateur ajouter avec succes', user: newUser };
     }
     findAll() {
         return this.userService.findAll();
@@ -34,12 +34,12 @@ let UserController = exports.UserController = class UserController {
     }
     async udpate(id, user) {
         const updatedUser = await this.userService.updatedNotification(id, user);
-        return { message: 'User updated', user: updatedUser };
+        return { message: 'Utilisateur modifier avec succes', user: updatedUser };
     }
     async remove(id) {
         {
             const userDeleted = await this.userService.deleteNotification(id);
-            return { message: 'User deleted success', userDeleted: userDeleted };
+            return { message: 'Utilisateur supprimer avec succes', userDeleted: userDeleted };
         }
     }
 };

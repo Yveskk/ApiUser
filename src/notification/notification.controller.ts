@@ -5,7 +5,7 @@ import { NotificationService } from "./notification.service";
 
 
 
-@Controller('user-actions')
+@Controller('notification')
 export class NotificationController{ 
     constructor (private readonly notificationService :   NotificationService){
     }

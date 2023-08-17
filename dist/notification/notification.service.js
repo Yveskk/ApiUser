@@ -32,7 +32,7 @@ let NotificationService = exports.NotificationService = class NotificationServic
             return this.userNotificationRepository.save(notification);
         }
         catch (error) {
-            throw new common_1.InternalServerErrorException('notification not created');
+            throw new common_1.InternalServerErrorException('notification n a pas été créer');
         }
     }
     async findAll() {
@@ -41,7 +41,7 @@ let NotificationService = exports.NotificationService = class NotificationServic
             return notif;
         }
         catch (error) {
-            throw new common_1.InternalServerErrorException('notif no creer');
+            throw new common_1.InternalServerErrorException('notification n a pas été créer');
         }
     }
 };

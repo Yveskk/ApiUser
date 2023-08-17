@@ -6,7 +6,7 @@ export class User{
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     firstname : string;
 
     @Column()
@@ -20,8 +20,6 @@ export class User{
 
     @UpdateDateColumn()
     updatedAt : Date;
-
-      // ... d'autres propriétés de l'utilisateur
 
   @OneToMany(() => NotifictionEntity, notification => notification.user)
   notifications: Notification[];

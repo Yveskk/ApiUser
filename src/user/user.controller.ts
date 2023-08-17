@@ -20,7 +20,7 @@ export class UserController{
 
    
       const newUser = await this.userService.createNotification(user);  
-      return {message : 'User added successfully' , user : newUser};
+      return {message : 'Utilisateur ajouter avec succes' , user : newUser};
    }
     @Get()
     findAll(){
@@ -32,16 +32,11 @@ export class UserController{
         return this.userService.IdFind(id);
     }
 
-    // @Get(':firstName/:lastName')
-    // findOneByName(@Param('firstName') firstName: string, @Param('lastName') lastName: string) : Promise<User>{
-    //     return this.userService.findOneByName(firstName, lastName);
-    // }
-
     @Patch(':id')
     async udpate(@Param('id') id: number ,  @Body() user: User){
         const updatedUser = await  this.userService.updatedNotification(id , user);
        
-        return {message : 'User updated', user : updatedUser};
+        return {message : 'Utilisateur modifier avec succes', user : updatedUser};
     }
 
 
@@ -50,7 +45,7 @@ export class UserController{
          
            
                     const userDeleted = await  this.userService.deleteNotification(id);
-                    return   {message : 'User deleted success', userDeleted : userDeleted};                                        
+                    return   {message : 'Utilisateur supprimer avec succes', userDeleted : userDeleted};                                        
           
        
     }
