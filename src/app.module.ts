@@ -1,25 +1,34 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user/user.entity';
+import { UserModule } from './user/user.module';
 import { NotificationModule } from './notification/notification.module';
+import { NotifictionEntity } from './notification/notification.entity';
+
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
+    UserModule,
+    NotificationModule, 
+  //connexion a la base de donnée
+  TypeOrmModule.forRoot({
+    type: 'postgres',
       host: 'localhost',
       port: 5432,
       username: 'postgress',
       password: 'postgres',
-      database: 'apiuser',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
-    UserModule,
-    NotificationModule,
-    ],
+      database: 'api_utilisateur',
+    entities: [User , NotifictionEntity], 
+    synchronize: true, 
+  }),
+
+  ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  
+}

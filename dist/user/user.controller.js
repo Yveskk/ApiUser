@@ -15,25 +15,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
-const user_entity_1 = require("./entities/user.entity");
+const user_entity_1 = require("./user.entity");
+const notification_service_1 = require("../notification/notification.service");
 let UserController = exports.UserController = class UserController {
-    constructor(userService) {
+    constructor(userService, notificationService) {
         this.userService = userService;
+        this.notificationService = notificationService;
     }
-    create(user) {
-        return this.userService.create(user);
+    async create(user) {
+        const newUser = await this.userService.createNotification(user);
+        return { message: 'User added successfully', user: newUser };
     }
     findAll() {
         return this.userService.findAll();
     }
-    findOne(id) {
-        return this.userService.findOne(id);
+    findOneById(id) {
+        return this.userService.IdFind(id);
     }
-    update(id, user) {
-        return this.userService.update(id, user);
+    async udpate(id, user) {
+        const updatedUser = await this.userService.updatedNotification(id, user);
+        return { message: 'User updated', user: updatedUser };
     }
-    remove(id) {
-        return this.userService.remove(id);
+    async remove(id) {
+        {
+            const userDeleted = await this.userService.deleteNotification(id);
+            return { message: 'User deleted success', userDeleted: userDeleted };
+        }
     }
 };
 __decorate([
@@ -47,7 +54,7 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], UserController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
@@ -55,15 +62,15 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "findOne", null);
+], UserController.prototype, "findOneById", null);
 __decorate([
-    (0, common_1.Put)(':id'),
+    (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, user_entity_1.User]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "update", null);
+], UserController.prototype, "udpate", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -72,7 +79,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "remove", null);
 exports.UserController = UserController = __decorate([
-    (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    (0, common_1.Controller)('user'),
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        notification_service_1.NotificationService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

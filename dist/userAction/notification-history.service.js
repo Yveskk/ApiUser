@@ -6,14 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppService = void 0;
+exports.NotificationHistoryService = void 0;
 const common_1 = require("@nestjs/common");
-let AppService = exports.AppService = class AppService {
-    getHello() {
-        return 'WOELAB APPLICATION MANAGEMNENT';
+let NotificationHistoryService = exports.NotificationHistoryService = class NotificationHistoryService {
+    constructor() {
+        this.history = [];
+    }
+    addNotification(message) {
+        this.history.push(message);
+    }
+    getHistory() {
+        return this.history;
     }
 };
-exports.AppService = AppService = __decorate([
+exports.NotificationHistoryService = NotificationHistoryService = __decorate([
     (0, common_1.Injectable)()
-], AppService);
-//# sourceMappingURL=app.service.js.map
+], NotificationHistoryService);
+//# sourceMappingURL=notification-history.service.js.map

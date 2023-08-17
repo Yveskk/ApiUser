@@ -16,32 +16,135 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const user_entity_1 = require("./entities/user.entity");
+const user_entity_1 = require("./user.entity");
+const notification_service_1 = require("../notification/notification.service");
 let UserService = exports.UserService = class UserService {
-    constructor(userRepository) {
+    constructor(userRepository, notificationService, entityManager, userService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
+        this.entityManager = entityManager;
+        this.userService = userService;
     }
     async create(user) {
-        return await this.userRepository.save(user);
+        try {
+            const createdUser = await this.userRepository.save(user);
+            const notificationMessage = `${user.firstname} created`;
+            this.notificationService.createNotification(createdUser, notificationMessage);
+            return createdUser;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException("Could not create user");
+        }
     }
     async findAll() {
-        return await this.userRepository.find();
+        try {
+            const users = await this.userRepository.find();
+            return users;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException("Not found user");
+        }
     }
-    async findOne(id) {
-        const options = { where: { id } };
-        return await this.userRepository.findOne(options);
+    async IdFind(id) {
+        try {
+            const myId = await this.userRepository.findOneById(id);
+            return myId;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException("Not found user by id: " + id);
+        }
     }
     async update(id, user) {
-        await this.userRepository.update(id, user);
-        return this.findOne(id);
+        try {
+            const userId = await this.IdFind(id);
+            if (!user) {
+                throw new Error('User not found');
+            }
+            if (userId.firstname) {
+                userId.firstname = user.firstname;
+            }
+            if (userId.lastname) {
+                userId.lastname = user.lastname;
+            }
+            if (userId.age) {
+                userId.age = user.age;
+            }
+            return this.userRepository.save(userId);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException("not updated user ");
+        }
+    }
+    async updatedNotification(id, updateData) {
+        try {
+            return await this.entityManager.transaction(async (transactionalEntityManager) => {
+                const userId = await transactionalEntityManager.findOneById(user_entity_1.User, id);
+                if (!userId) {
+                    throw new common_1.NotFoundException(`L'utilisateur avec l'ID ${id} n'a pas été trouvé`);
+                }
+                await transactionalEntityManager.merge(user_entity_1.User, userId, updateData);
+                const result = await transactionalEntityManager.save(userId);
+                const notificationMessage = `${userId.firstname} deleted`;
+                await this.notificationService.createNotification(userId, notificationMessage);
+                return result;
+            });
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
+        }
     }
     async remove(id) {
-        await this.userRepository.delete(id);
+        const userId = await this.IdFind(id);
+        if (!userId) {
+            throw new Error('User not found');
+        }
+        try {
+            return this.userRepository.remove(userId);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('not deleted user');
+        }
+    }
+    async deleteNotification(id) {
+        try {
+            return await this.entityManager.transaction(async (transactionalEntityManager) => {
+                const userToDelete = await transactionalEntityManager.findOneById(user_entity_1.User, id);
+                if (!userToDelete) {
+                    throw new common_1.NotFoundException(`L'utilisateur avec l'ID ${id} n'a pas été trouvé`);
+                }
+                await transactionalEntityManager.remove(userToDelete);
+                const notificationMessage = `${userToDelete.firstname} deleted`;
+                await this.notificationService.createNotification(userToDelete, notificationMessage);
+            });
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
+        }
+    }
+    async createNotification(user) {
+        try {
+            return await this.entityManager.transaction(async (transactionalEntityManager) => {
+                const createdUser = await transactionalEntityManager.save(user_entity_1.User, user);
+                const notificationMessage = `${user.firstname} created`;
+                await this.notificationService.createNotification(createdUser, notificationMessage);
+                return createdUser;
+            });
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
+        }
     }
 };
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        notification_service_1.NotificationService,
+        typeorm_2.EntityManager,
+        typeorm_2.Repository])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

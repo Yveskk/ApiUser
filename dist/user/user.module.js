@@ -8,17 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModule = void 0;
 const common_1 = require("@nestjs/common");
-const user_service_1 = require("./user.service");
 const user_controller_1 = require("./user.controller");
+const user_service_1 = require("./user.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./entities/user.entity");
+const user_entity_1 = require("./user.entity");
+const notification_entity_1 = require("../notification/notification.entity");
+const notification_service_1 = require("../notification/notification.service");
+const notification_module_1 = require("../notification/notification.module");
 let UserModule = exports.UserModule = class UserModule {
 };
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, notification_entity_1.NotifictionEntity]), notification_module_1.NotificationModule],
         controllers: [user_controller_1.UserController],
-        providers: [user_service_1.UserService],
+        providers: [user_service_1.UserService, notification_service_1.NotificationService],
     })
 ], UserModule);
 //# sourceMappingURL=user.module.js.map

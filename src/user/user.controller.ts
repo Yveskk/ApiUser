@@ -1,34 +1,62 @@
-// src/user/user.controller.ts
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { UserService } from './user.service';
-import { User } from './entities/user.entity';
+import { Body, Controller, Delete, Get, Param, Post , Patch} from "@nestjs/common";
+import { UserService } from "./user.service";
+import { User } from "./user.entity";
+import { NotificationService } from "src/notification/notification.service";
 
-@Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() user: User): Promise<User> {
-    return this.userService.create(user);
-  }
 
-  @Get()
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
-  }
+@Controller('user')
+export class UserController{
+    constructor (private readonly userService: UserService,
+        private readonly notificationService: NotificationService
+      ){
 
-  @Get(':id')
-  findOne(@Param('id') id: number): Promise<User> {
-    return this.userService.findOne(id);
-  }
+    }
 
-  @Put(':id')
-  update(@Param('id') id: number, @Body() user: User): Promise<User> {
-    return this.userService.update(id, user);
-  }
+    @Post( )
+   async create(@Body() user: User){
+  
+    
 
-  @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
-    return this.userService.remove(id);
-  }
+   
+      const newUser = await this.userService.createNotification(user);  
+      return {message : 'User added successfully' , user : newUser};
+   }
+    @Get()
+    findAll(){
+        return this.userService.findAll();
+    }
+
+    @Get(':id')
+    findOneById(@Param('id') id : number): Promise<User | undefined>{
+        return this.userService.IdFind(id);
+    }
+
+    // @Get(':firstName/:lastName')
+    // findOneByName(@Param('firstName') firstName: string, @Param('lastName') lastName: string) : Promise<User>{
+    //     return this.userService.findOneByName(firstName, lastName);
+    // }
+
+    @Patch(':id')
+    async udpate(@Param('id') id: number ,  @Body() user: User){
+        const updatedUser = await  this.userService.updatedNotification(id , user);
+       
+        return {message : 'User updated', user : updatedUser};
+    }
+
+
+    @Delete(':id')
+        async   remove (@Param('id') id: number ) {  {
+         
+           
+                    const userDeleted = await  this.userService.deleteNotification(id);
+                    return   {message : 'User deleted success', userDeleted : userDeleted};                                        
+          
+       
+    }
+}
+
+    
+
+
 }
