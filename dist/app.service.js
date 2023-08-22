@@ -10,7 +10,7 @@ exports.AppService = void 0;
 const common_1 = require("@nestjs/common");
 let AppService = exports.AppService = class AppService {
     getHello() {
-        return 'WOELAB APPLICATION MANAGEMNENT';
+        return 'Hello emile!';
     }
 };
 exports.AppService = AppService = __decorate([

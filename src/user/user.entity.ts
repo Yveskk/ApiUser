@@ -1,4 +1,4 @@
-import { NotifictionEntity } from "src/notification/notification.entity";
+import { NotifictionEntity } from "src/Notification/notification.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('user')
@@ -6,7 +6,7 @@ export class User{
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
+    @Column()
     firstname : string;
 
     @Column()
@@ -20,6 +20,8 @@ export class User{
 
     @UpdateDateColumn()
     updatedAt : Date;
+
+      // ... d'autres propriétés de l'utilisateur
 
   @OneToMany(() => NotifictionEntity, notification => notification.user)
   notifications: Notification[];

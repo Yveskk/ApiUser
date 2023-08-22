@@ -10,28 +10,19 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const notification_module_1 = require("./Notification/notification.module");
+const connection_1 = require("./ConfigDb/connection");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./user/user.entity");
 const user_module_1 = require("./user/user.module");
-const notification_module_1 = require("./notification/notification.module");
-const notification_entity_1 = require("./notification/notification.entity");
+const swagger_1 = require("@nestjs/swagger");
 let AppModule = exports.AppModule = class AppModule {
 };
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [
+        imports: [notification_module_1.NotificationModule,
             user_module_1.UserModule,
-            notification_module_1.NotificationModule,
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'postgres',
-                host: 'localhost',
-                port: 5432,
-                username: 'postgress',
-                password: 'postgres',
-                database: 'api_utilisateur',
-                entities: [user_entity_1.User, notification_entity_1.NotifictionEntity],
-                synchronize: true,
-            }),
+            swagger_1.SwaggerModule,
+            typeorm_1.TypeOrmModule.forRoot(connection_1.typeOrmConfig),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

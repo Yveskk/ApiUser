@@ -1,22 +1,25 @@
-import { UserService } from "./user.service";
-import { User } from "./user.entity";
-import { NotificationService } from "src/notification/notification.service";
+import { CreateUserDto } from './Dto/create/create-user.dto';
+import { UserEntity } from './entities/user.entity/user.entity';
+import { UpdateUserDto } from './Dto/update/update-user.dto';
+import { UserService } from './user.service';
 export declare class UserController {
     private readonly userService;
-    private readonly notificationService;
-    constructor(userService: UserService, notificationService: NotificationService);
-    create(user: User): Promise<{
+    constructor(userService: UserService);
+    createUser(createUserDto: CreateUserDto): Promise<{
         message: string;
-        user: User;
     }>;
-    findAll(): Promise<User[]>;
-    findOneById(id: number): Promise<User | undefined>;
-    udpate(id: number, user: User): Promise<{
+    getAllUser(): Promise<{
         message: string;
-        user: User;
+        user: UserEntity[];
     }>;
-    remove(id: number): Promise<{
+    getUser(id: number): Promise<{
         message: string;
-        userDeleted: void;
+        user: UserEntity;
+    }>;
+    updateUser(id: number, updateUserDto: UpdateUserDto): Promise<{
+        message: string;
+    }>;
+    deleteUser(id: number): Promise<{
+        message: string;
     }>;
 }

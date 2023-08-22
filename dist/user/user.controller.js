@@ -13,74 +13,67 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
-const common_1 = require("@nestjs/common");
+const create_user_dto_1 = require("./Dto/create/create-user.dto");
+const update_user_dto_1 = require("./Dto/update/update-user.dto");
 const user_service_1 = require("./user.service");
-const user_entity_1 = require("./user.entity");
-const notification_service_1 = require("../notification/notification.service");
+const common_1 = require("@nestjs/common");
 let UserController = exports.UserController = class UserController {
-    constructor(userService, notificationService) {
+    constructor(userService) {
         this.userService = userService;
-        this.notificationService = notificationService;
     }
-    async create(user) {
-        const newUser = await this.userService.createNotification(user);
-        return { message: 'Utilisateur ajouter avec succes', user: newUser };
+    async createUser(createUserDto) {
+        return await this.userService.createUser(createUserDto);
     }
-    findAll() {
-        return this.userService.findAll();
+    async getAllUser() {
+        return await this.userService.getAllUsers();
     }
-    findOneById(id) {
-        return this.userService.IdFind(id);
+    async getUser(id) {
+        return await this.userService.getUser(id);
     }
-    async udpate(id, user) {
-        const updatedUser = await this.userService.updatedNotification(id, user);
-        return { message: 'Utilisateur modifier avec succes', user: updatedUser };
+    async updateUser(id, updateUserDto) {
+        return await this.userService.updateUser(id, updateUserDto);
     }
-    async remove(id) {
-        {
-            const userDeleted = await this.userService.deleteNotification(id);
-            return { message: 'Utilisateur supprimer avec succes', userDeleted: userDeleted };
-        }
+    async deleteUser(id) {
+        return await this.userService.deleteUser(id);
     }
 };
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User]),
+    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "create", null);
+], UserController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "findAll", null);
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getAllUser", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "findOneById", null);
+], UserController.prototype, "getUser", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, user_entity_1.User]),
+    __metadata("design:paramtypes", [Number, update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "udpate", null);
+], UserController.prototype, "updateUser", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "remove", null);
+], UserController.prototype, "deleteUser", null);
 exports.UserController = UserController = __decorate([
-    (0, common_1.Controller)('user'),
-    __metadata("design:paramtypes", [user_service_1.UserService,
-        notification_service_1.NotificationService])
+    (0, common_1.Controller)('utilisateur'),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

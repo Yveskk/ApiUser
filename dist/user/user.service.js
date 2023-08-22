@@ -14,137 +14,112 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
-const user_entity_1 = require("./user.entity");
-const notification_service_1 = require("../notification/notification.service");
+const notification_service_1 = require("../Notification/notification.service");
+const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./entities/user.entity/user.entity");
+const notification_dto_1 = require("../Notification/Dto/notification.dto");
+const typeorm_2 = require("@nestjs/typeorm");
 let UserService = exports.UserService = class UserService {
-    constructor(userRepository, notificationService, entityManager, userService) {
-        this.userRepository = userRepository;
+    constructor(notificationService, dataSource, connection) {
         this.notificationService = notificationService;
-        this.entityManager = entityManager;
-        this.userService = userService;
+        this.dataSource = dataSource;
+        this.connection = connection;
     }
-    async create(user) {
+    async createUser(createUserDto) {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try {
-            const createdUser = await this.userRepository.save(user);
-            const notificationMessage = `${user.firstname} created`;
-            this.notificationService.createNotification(createdUser, notificationMessage);
-            return createdUser;
+            const user = new user_entity_1.UserEntity();
+            user.firstname = createUserDto.firstname;
+            user.lastname = createUserDto.lastname;
+            user.age = createUserDto.age;
+            await queryRunner.manager.save(user);
+            const message = `${user.firstname} created `;
+            const notif = new notification_dto_1.NotificationDto();
+            notif.message = message;
+            await this.notificationService.createNotification(queryRunner, notif, user);
+            await queryRunner.commitTransaction();
+            return { message: `  ${user.firstname} created` };
         }
         catch (error) {
-            throw new common_1.InternalServerErrorException("Could not create user");
+            await queryRunner.rollbackTransaction();
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
         }
     }
-    async findAll() {
+    async updateUser(id, updateUserDto) {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try {
-            const users = await this.userRepository.find();
-            return users;
-        }
-        catch (error) {
-            throw new common_1.InternalServerErrorException("Not found user");
-        }
-    }
-    async IdFind(id) {
-        try {
-            const myId = await this.userRepository.findOneById(id);
-            return myId;
-        }
-        catch (error) {
-            throw new common_1.InternalServerErrorException("Not found user by id: " + id);
-        }
-    }
-    async update(id, user) {
-        try {
-            const userId = await this.IdFind(id);
-            if (!user) {
-                throw new Error('User not found');
-            }
-            if (userId.firstname) {
-                userId.firstname = user.firstname;
-            }
-            if (userId.lastname) {
-                userId.lastname = user.lastname;
-            }
-            if (userId.age) {
-                userId.age = user.age;
-            }
-            return this.userRepository.save(userId);
-        }
-        catch (error) {
-            throw new common_1.InternalServerErrorException("not updated user ");
-        }
-    }
-    async updatedNotification(id, updateData) {
-        try {
-            return await this.entityManager.transaction(async (transactionalEntityManager) => {
-                const userId = await transactionalEntityManager.findOneById(user_entity_1.User, id);
-                if (!userId) {
-                    throw new common_1.NotFoundException(`L'utilisateur avec l'ID ${id} n'a pas été trouvé`);
-                }
-                await transactionalEntityManager.merge(user_entity_1.User, userId, updateData);
-                const result = await transactionalEntityManager.save(userId);
-                const notificationMessage = `${userId.firstname} deleted`;
-                await this.notificationService.createNotification(userId, notificationMessage);
-                return result;
+            const user = await queryRunner.manager.findOneOrFail(user_entity_1.UserEntity, {
+                where: { id },
             });
+            user.firstname = updateUserDto.firstname;
+            user.lastname = updateUserDto.lastname;
+            user.age = updateUserDto.age;
+            await queryRunner.manager.save(user);
+            const message = `updated ${user.firstname}`;
+            const notif = new notification_dto_1.NotificationDto();
+            notif.message = message;
+            await this.notificationService.createNotification(queryRunner, notif, user);
+            await queryRunner.commitTransaction();
+            return { message: ` ${user.id} => ${user.firstname} updated` };
         }
-        catch (error) {
-            console.log(error);
-            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
+        catch (err) {
+            await queryRunner.rollbackTransaction();
+            throw err;
+        }
+        finally {
+            await queryRunner.release();
         }
     }
-    async remove(id) {
-        const userId = await this.IdFind(id);
-        if (!userId) {
-            throw new Error('User not found');
-        }
+    async deleteUser(id) {
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try {
-            return this.userRepository.remove(userId);
-        }
-        catch (error) {
-            throw new common_1.InternalServerErrorException('not deleted user');
-        }
-    }
-    async deleteNotification(id) {
-        try {
-            return await this.entityManager.transaction(async (transactionalEntityManager) => {
-                const userToDelete = await transactionalEntityManager.findOneById(user_entity_1.User, id);
-                if (!userToDelete) {
-                    throw new common_1.NotFoundException(`L'utilisateur avec l'ID ${id} n'a pas été trouvé`);
-                }
-                await transactionalEntityManager.remove(userToDelete);
-                const notificationMessage = `${userToDelete.firstname} deleted`;
-                await this.notificationService.createNotification(userToDelete, notificationMessage);
+            const userdeleted = await queryRunner.manager.findOneOrFail(user_entity_1.UserEntity, {
+                where: { id },
             });
+            await queryRunner.manager.delete(user_entity_1.UserEntity, id);
+            const message = `deleted ${userdeleted.firstname}`;
+            const notif = new notification_dto_1.NotificationDto();
+            notif.message = message;
+            await this.notificationService.createNotification(queryRunner, notif, userdeleted);
+            await queryRunner.commitTransaction();
+            return {
+                message: ` ${userdeleted.id} => ${userdeleted.firstname} deleted`,
+            };
         }
-        catch (error) {
-            console.log(error);
-            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
+        catch (err) {
+            await queryRunner.rollbackTransaction();
+            throw err;
+        }
+        finally {
+            await queryRunner.release();
         }
     }
-    async createNotification(user) {
-        try {
-            return await this.entityManager.transaction(async (transactionalEntityManager) => {
-                const createdUser = await transactionalEntityManager.save(user_entity_1.User, user);
-                const notificationMessage = `${user.firstname} created`;
-                await this.notificationService.createNotification(createdUser, notificationMessage);
-                return createdUser;
-            });
-        }
-        catch (error) {
-            console.log(error);
-            throw new common_1.InternalServerErrorException('Une erreur est survenue lors de la suppression de l\'utilisateur');
-        }
+    async getAllUsers() {
+        const user = new user_entity_1.UserEntity();
+        const allUsers = await this.connection.manager.find(user_entity_1.UserEntity);
+        return { message: 'Les utilisateurs : ', user: allUsers };
+    }
+    async getUser(id) {
+        const userID = await this.connection.manager.findOne(user_entity_1.UserEntity, {
+            where: { id },
+        });
+        return { message: `Utilisateur: ${userID.id} `, user: userID };
     }
 };
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        notification_service_1.NotificationService,
-        typeorm_2.EntityManager,
-        typeorm_2.Repository])
+    __param(2, (0, typeorm_2.InjectConnection)()),
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        typeorm_1.DataSource,
+        typeorm_1.Connection])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

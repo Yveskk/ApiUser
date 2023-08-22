@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const notification_entity_1 = require("../notification/notification.entity");
+const notification_entity_1 = require("../Notification/notification.entity");
 const typeorm_1 = require("typeorm");
 let User = exports.User = class User {
 };
@@ -19,7 +19,7 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "firstname", void 0);
 __decorate([
