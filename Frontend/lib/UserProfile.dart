@@ -35,7 +35,7 @@ class _UserProfileState extends State<UserProfile> {
             ),
             child: Container(
               width: 200,
-              height: 250, // Adjust the height to your preference
+              height: 250,
               padding: const EdgeInsets.all(20),
               color: Colors.grey[300],
               child: Column(
@@ -155,9 +155,10 @@ class _UserProfileState extends State<UserProfile> {
 
     if (shouldEdit != null && shouldEdit) {
       // Navigate to EditProfilePage
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => EditProfilePage()),
+        MaterialPageRoute(builder: (context) => const EditProfilePage()),
       );
     }
   }

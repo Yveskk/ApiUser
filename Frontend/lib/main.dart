@@ -31,7 +31,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  final int _unreadNotificationCount = 3; 
+  final int _unreadNotificationCount = 2; 
   final List<Widget> _pages = [const UserPage(), const Search()];
 
   @override
